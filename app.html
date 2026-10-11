@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mailbox math - calculators</title>
+<style>
+  :root { --accent: #3fa08c; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: #f6faf9; color: #26302e; line-height: 1.55; }
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 8px; color: var(--accent); }
+  .lede { margin: 0 0 28px; max-width: 640px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  section { background: #fff; border: 1px solid #d9e8e4; border-radius: 8px; padding: 20px 22px; }
+  h2 { font-size: 1.15rem; margin: 0 0 6px; }
+  .hint { font-size: 0.9rem; color: #62746f; margin: 0 0 14px; }
+  label { display: block; font-size: 0.9rem; margin: 10px 0 3px; }
+  input { width: 100%; padding: 8px 10px; font-size: 1rem; border: 1px solid #bcd4ce; border-radius: 5px; font-family: inherit; }
+  button { margin-top: 16px; width: 100%; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; font-family: inherit; }
+  button:hover { filter: brightness(1.08); }
+  .out { margin-top: 14px; font-size: 1rem; min-height: 1.4em; }
+  .out.err { color: #a32222; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; font-size: 0.85rem; color: #8a9a96; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Mailbox math</h1>
+  <p class="lede">The parcel through the slot, the stamps on the letter and the days until the box overflows. Exact arithmetic, every borrowed number labeled.</p>
+  <div class="grid">
+    <section>
+      <h2>Slot plan</h2>
+      <p class="hint">A parcel becomes a fit verdict.</p>
+      <label for="s-slotw">Slot width (cm)</label>
+      <input id="s-slotw" type="number" value="25" min="0" step="0.5">
+      <label for="s-sloth">Slot height (cm)</label>
+      <input id="s-sloth" type="number" value="4" min="0" step="0.5">
+      <label for="s-pl">Parcel length (cm)</label>
+      <input id="s-pl" type="number" value="30" min="0" step="0.5">
+      <label for="s-pw">Parcel width (cm)</label>
+      <input id="s-pw" type="number" value="25" min="0" step="0.5">
+      <label for="s-ph">Parcel height (cm)</label>
+      <input id="s-ph" type="number" value="3.5" min="0" step="0.5">
+      <button id="s-go">Try the slot</button>
+      <div class="out" id="s-out"></div>
+    </section>
+    <section>
+      <h2>Stamp plan</h2>
+      <p class="hint">A letter becomes stamps.</p>
+      <label for="t-weight">Letter weight (g)</label>
+      <input id="t-weight" type="number" value="85" min="0" step="1">
+      <label for="t-per">Grams per stamp</label>
+      <input id="t-per" type="number" value="20" min="0" step="5">
+      <label for="t-price">Price per stamp</label>
+      <input id="t-price" type="number" value="0.85" min="0" step="0.05">
+      <button id="t-go">Count the stamps</button>
+      <div class="out" id="t-out"></div>
+    </section>
+    <section>
+      <h2>Fill plan</h2>
+      <p class="hint">A box becomes days away.</p>
+      <label for="f-box">Box volume (L)</label>
+      <input id="f-box" type="number" value="40" min="0" step="5">
+      <label for="f-day">Mail per day (L)</label>
+      <input id="f-day" type="number" value="3" min="0" step="0.5">
+      <button id="f-go">Count the days</button>
+      <div class="out" id="f-out"></div>
+    </section>
+  </div>
+</main>
+<footer>Built by the app factory. <a href="index.html">About</a> &middot; <a href="https://github.com/iLanis-agent/mailboxmath">Source</a></footer>
+<script src="engine.js"></script>
+<script>
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function show(id, r, render){
+  var el = document.getElementById(id);
+  if (r.error) { el.textContent = r.error; el.classList.add('err'); }
+  else { el.textContent = render(r); el.classList.remove('err'); }
+}
+document.getElementById('s-go').addEventListener('click', function(){
+  show('s-out', MailboxMath.slotPlan(num('s-slotw'),num('s-sloth'),num('s-pl'),num('s-pw'),num('s-ph')), function(r){ return MailboxMath.renderSlot(r, num('s-slotw'), num('s-sloth'), num('s-pl'), num('s-pw'), num('s-ph')); });
+});
+document.getElementById('t-go').addEventListener('click', function(){
+  show('t-out', MailboxMath.stampPlan(num('t-weight'),num('t-per'),num('t-price')), function(r){ return MailboxMath.renderStamp(r, num('t-weight'), num('t-per'), num('t-price')); });
+});
+document.getElementById('f-go').addEventListener('click', function(){
+  show('f-out', MailboxMath.fillPlan(num('f-box'),num('f-day')), function(r){ return MailboxMath.renderFill(r, num('f-box'), num('f-day')); });
+});
+</script>
+</body>
+</html>
